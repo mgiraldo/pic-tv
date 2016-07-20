@@ -96,7 +96,7 @@ module PIC {
         defaultValue = "*";
 
         // for random moves
-        heightThreshold = 50
+        heightThreshold = 30
         cameraHeight = 2000.0
         cameraDistance = 1 // degrees
         flightDelay = 7000
@@ -107,6 +107,8 @@ module PIC {
         cameraMoveBackRemain = 0
         cameraMoveDownRemain = 0
         cameraMoveIncrement = 30
+        cameraLat = 0
+        cameraLon = 0
 
         nullIsland: any;
         boundsFrom: Cesium.Cartographic;
@@ -379,7 +381,9 @@ module PIC {
                     mapId: this.mapboxMap,
                     accessToken: this.mapboxKey
                 })
-
+                // ,terrainProvider : new Cesium.CesiumTerrainProvider({
+                //     url : 'https://assets.agi.com/stk-terrain/world'
+                // })
                 // ,clock: new Cesium.Clock({shouldAnimate:false})
                 ,geocoder: false
                 ,baseLayerPicker: false
@@ -767,16 +771,15 @@ module PIC {
         flyToNewSpot () {
             var len = this.latlonHeightArray.length
             var found = false
-            var lat, lon
 
             while (!found) {
                 var rand = Math.floor( Math.random() * len )
                 var randHash = this.latlonHeightArray[rand]
                 var newLat, newLon
                 [newLat, newLon] = randHash.split(",")
-                if (newLat != lat || newLon != lon) {
-                    lat = newLat
-                    lon = newLon
+                if (newLat != this.cameraLat || newLon != this.cameraLon) {
+                    this.cameraLat = newLat
+                    this.cameraLon = newLon
                     found = true
                 }
             }
@@ -791,7 +794,7 @@ module PIC {
             // console.log(randHash, lat, lon);
 
             this.viewer.camera.flyTo({
-                destination : Cesium.Cartesian3.fromDegrees(lon, lat, this.cameraHeight),
+                destination : Cesium.Cartesian3.fromDegrees(this.cameraLon, this.cameraLat, this.cameraHeight),
                 orientation : {
                     heading : Cesium.Math.toRadians(head),
                     pitch : Cesium.Math.toRadians(pitch),
@@ -2300,7 +2303,7 @@ module PIC {
                     }
                     this.latlonHeightHash[latlonHash] = height;
                     this.heightHash[p[3]] = height;
-                    if (this.flightCountries.indexOf(p[5]) !== -1 && height / this.heightDelta > this.heightThreshold) {
+                    if (latlonHash != "0,0" && height / this.heightDelta > this.heightThreshold) {
                         this.latlonHeightArray.push(latlonHash)                        
                     }
                 } else {
