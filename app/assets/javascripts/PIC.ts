@@ -107,8 +107,8 @@ module PIC {
         cameraMoveBackRemain = 0
         cameraMoveDownRemain = 0
         cameraMoveIncrement = 30
-        cameraLat = 0
-        cameraLon = 0
+        cameraLat
+        cameraLon
 
         nullIsland: any;
         boundsFrom: Cesium.Cartographic;
