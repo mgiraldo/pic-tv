@@ -127,9 +127,9 @@ hr {
 #cesiumContainer {
     background-color: $black;
     position: absolute;
-    left: ($facetsWidth + $resultsWidth);
-    width: (100% - $facetsWidth - $resultsWidth);
-    top: $headerHeight;
+    left: 0;
+    width: 100%;
+    top: 0;
     right: 0;
     bottom: 0;
 

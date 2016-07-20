@@ -298,16 +298,6 @@ module PIC {
         }
 
         init() {
-            $("#facet-container .minimize").click(() => this.minimizeFacets());
-            $("#facet-container .maximize").click(() => this.maximizeFacets());
-            $("#cesiumContainer .minimize").click(() => this.minimizeMap());
-            $("#cesiumContainer .maximize").click(() => this.maximizeMap());
-            $("#constituents .minimize").click(() => this.minimizeResults());
-            $("#constituents .maximize").click(() => this.maximizeResults());
-            $("#bounds .button.apply").click(() => this.applyBounds());
-            $("#bounds .button.cancel").click(() => this.cancelBounds());
-            $(".map-help-link").click(() => this.toggleHelp());
-
             this.resultsElement = $("#constituents");
             this.facetsElement = $("#facets");
             this.getFacets();
@@ -317,7 +307,7 @@ module PIC {
             this.initMouseHandler();
             this.initListeners();
             // url history management
-            $("#facet-container").on("overlays:ready", (e) => {
+            $("#cesiumContainer").on("overlays:ready", (e) => {
                 var state = Historyjs.getState();
                 if (state.hash == "/map/") {
                     this.displayBaseData();
@@ -384,7 +374,7 @@ module PIC {
                 ,navigationHelpButton : false
                 ,navigationInstructionsInitiallyVisible : false
                 ,mapProjection : new Cesium.WebMercatorProjection()
-                // ,creditContainer : "credits"
+                ,creditContainer : "credits"
                 ,selectionIndicator : false
                 ,skyBox : false
                 ,sceneMode : Cesium.SceneMode.SCENE2D
@@ -741,7 +731,7 @@ module PIC {
                 if (this.pointArray[index] === undefined) continue;
                 this.pointArray[index][6] = heightData[i+1];
             }
-            $("#facet-container").trigger("overlays:ready");
+            $("#cesiumContainer").trigger("overlays:ready");
         }
 
         displayBaseData () {
@@ -750,7 +740,7 @@ module PIC {
             this.enableFacets();
             this.updateBounds();
             this.showResults();
-            this.applyBaseAggregations()
+            // this.applyBaseAggregations()
         }
 
         applyAggregations (aggs) {
@@ -1177,9 +1167,9 @@ module PIC {
 
             this.canvas.setAttribute('tabindex', '0'); // needed to put focus on the canvas
 
-            $("#facet-container, #constituents").mousemove( () => {
-                this.positionHover(false);
-            } );
+            // $("#facet-container, #constituents").mousemove( () => {
+            //     this.positionHover(false);
+            // } );
 
             // this.canvas.onclick = (e) => {
             //     this.canvas.focus();
@@ -1211,29 +1201,29 @@ module PIC {
                 this.notifyRepaintRequired()
             }
 
-            this.canvas.onmousemove = this.canvas.ontouchmove = (e) => {
-                var c = new Cesium.Cartesian2(e.layerX, e.layerY);
-                if (!c) return;
-                this.mousePosition = c;
-                var pickedObject = this.scene.pick(c);
-                this.refreshPicked(pickedObject);
-                if (this.isDrawing) this.drawMove(c);
-            }
+            // this.canvas.onmousemove = this.canvas.ontouchmove = (e) => {
+            //     var c = new Cesium.Cartesian2(e.layerX, e.layerY);
+            //     if (!c) return;
+            //     this.mousePosition = c;
+            //     var pickedObject = this.scene.pick(c);
+            //     this.refreshPicked(pickedObject);
+            //     if (this.isDrawing) this.drawMove(c);
+            // }
 
-            this.canvas.onmousedown = this.canvas.ontouchstart = (e) => {
-                var c = new Cesium.Cartesian2(e.layerX, e.layerY);
-                this.mousePosition = this.startMousePosition = c;
-                if (this.isDrawing) this.drawStart(c);
-                this.hideBoundsDialog();
-            }
+            // this.canvas.onmousedown = this.canvas.ontouchstart = (e) => {
+            //     var c = new Cesium.Cartesian2(e.layerX, e.layerY);
+            //     this.mousePosition = this.startMousePosition = c;
+            //     if (this.isDrawing) this.drawStart(c);
+            //     this.hideBoundsDialog();
+            // }
 
-            this.canvas.onmouseup = this.canvas.ontouchend = (e) => {
-                var c = new Cesium.Cartesian2(e.layerX, e.layerY);
-                this.mousePosition = this.startMousePosition = c;
-                if (this.isDrawing) this.drawEnd(c);
-                if (this.adminMode) this.clickMoon(c);
-                this.positionBoundsDialog(e.layerX, e.layerY);
-            }
+            // this.canvas.onmouseup = this.canvas.ontouchend = (e) => {
+            //     var c = new Cesium.Cartesian2(e.layerX, e.layerY);
+            //     this.mousePosition = this.startMousePosition = c;
+            //     if (this.isDrawing) this.drawEnd(c);
+            //     if (this.adminMode) this.clickMoon(c);
+            //     this.positionBoundsDialog(e.layerX, e.layerY);
+            // }
 
         }
 
@@ -1486,38 +1476,6 @@ module PIC {
                 if (widget === undefined) continue;
                 widget.closeGroup();
             }
-        }
-
-        updateResults (data) {
-            this.clearResults();
-            if (data.aggregations) {
-                this.applyAggregations(data.aggregations)
-            }
-            var constituents = data.hits.hits;
-            var total = data.hits.total;
-            this.totalPhotographers = total;
-            var str = "<p>Found " + this.totalPhotographers.toLocaleString() + (this.totalPhotographers != 1 ? " constituents. " : " constituent. ");
-            if (total > this.resultLimit) {
-                str = str + " Showing first " + this.resultLimit + ".";
-            }
-
-            var url = "/export/?q=" + encodeURIComponent(JSON.stringify(this.buildFacetQuery()));
-            var urlGeo = this.geoJsonPrefix + encodeURIComponent("/export/?type=geojson&q=" + encodeURIComponent(JSON.stringify(this.buildFacetQuery())));
-
-            var exportStr = "Export results as";
-            if (total > this.maxExport) exportStr = "Export first " + this.maxExport.toLocaleString() + " results as";
-            str = str + '<span class="export-links">' + exportStr + ': <a href="' + url + '" target="_blank" title="opens in new window" class="export link">JSON</a> | <a href="' + urlGeo + '" target="_blank" title="open dataset in GeoJSON.io" class="export link">GeoJSON</a></span>';
-            str = str + "</p>";
-            this.resultsElement.find(".results").prepend(str);
-            if (total > 0) this.addResults(constituents, 0, data.hits.total);
-            this.updateTotals(-1);
-            // // now to see if a line should be shown
-            var lineID = parseInt(location.hash.replace("#",""));
-            // // console.log(lineID);
-            if (!isNaN(lineID)) {
-                this.connectAddresses(lineID);
-            }
-            this.scrollResults();
         }
 
         addResults (results, start, total) {
@@ -2158,7 +2116,6 @@ module PIC {
             var data = this.buildFacetQuery();
             var filters = "hits.total,hits.hits,aggregations";//this.buildBaseQueryFilters();
             // console.log("results", data);
-            this.getData({filters:filters, data:data, callback:this.updateResults, source:"", size:this.resultLimit});
         }
 
         showSpinner (target, opts = {}) {
@@ -2218,9 +2175,7 @@ module PIC {
             // console.log("addpoints",newPoints)
             if (!this.hasWebGL) return
             if (newPoints.length === 0) return;
-            var addressType = $("#"+this.facetWithName("addresstypes")[0]).data("value").toString();
-            var country = $("#" + this.facetWithName("countries")[0]).data("value").toString();
-            var bounds = this.facetWidgets["bbox"].getActiveValue();
+            var bounds = "*";
             var n = 180;
             var s = -180;
             var e = 180;
@@ -2239,18 +2194,6 @@ module PIC {
                 var index = this.pointHash[newPoints[i]];
                 var p = this.pointArray[index];
                 if (!p) continue;
-                // // hack, because elastic returns all addresses of a given id
-                // var tid = p[4];
-                // var cid = p[5];
-                // var loc = p[0] + "," + p[1];
-                // // console.log("type",addressType, tid, tid != addressType);
-                // if (addressType != "*" && tid != addressType) continue;
-                // // console.log("country",country, cid, cid != country);
-                // if (country != "*" && cid != country) continue;
-                // // console.log("latlon", w, e, s, n, "p", p, w <= p[0], e >= p[0], n >= p[1], s <= p[1]);
-                // if (!(w <= p[0] && e >= p[0] && n >= p[1] && s <= p[1])) continue;
-                // // console.log("yea");
-                // // end hack
                 var height;
                 // point has no real height
                 if (p[6] === undefined) {
@@ -2563,18 +2506,18 @@ module PIC {
         }
 
         initListeners () {
-            this.resetNameQuery();
-            this.resetDateQuery();
-            var from = $("#" + this.fromDateElement);
-            var to = $("#" + this.toDateElement);
-            from.keyup((e) => this.onFromDateKeyUp(e));
-            from.blur(() => this.updateTimeFilters());
-            to.keyup((e) => this.onToDateKeyUp(e));
-            to.blur(() => this.updateTimeFilters());
-            var name = $("#" + this.nameQueryElement)
-            name.keyup((e) => this.onNameQueryKeyUp(e));
-            name.blur(() => this.updateNameFilter());
-            $("#facets-clear").click(() => this.clearFilters());
+            // this.resetNameQuery();
+            // this.resetDateQuery();
+            // var from = $("#" + this.fromDateElement);
+            // var to = $("#" + this.toDateElement);
+            // from.keyup((e) => this.onFromDateKeyUp(e));
+            // from.blur(() => this.updateTimeFilters());
+            // to.keyup((e) => this.onToDateKeyUp(e));
+            // to.blur(() => this.updateTimeFilters());
+            // var name = $("#" + this.nameQueryElement)
+            // name.keyup((e) => this.onNameQueryKeyUp(e));
+            // name.blur(() => this.updateNameFilter());
+            // $("#facets-clear").click(() => this.clearFilters());
             if (!this.hasWebGL) return
             this.scene.morphComplete.addEventListener( () => {
                 if (this.scene.mode !== 2) {
@@ -2584,12 +2527,12 @@ module PIC {
                 }
                 var url = this.buildQueryString();
                 Historyjs.pushState({ignore:true,mode:this.scene.mode}, "PIC - Photographers’ Identities Catalog", url);
-                this.updateTextLabels();
-                this.viewer.sceneModePicker.viewModel.dropDownVisible = true;
+                // this.updateTextLabels();
+                // this.viewer.sceneModePicker.viewModel.dropDownVisible = true;
             });
             this.camera.moveEnd.addEventListener( () => {
                 this.storedView.save(this.camera);
-                this.viewer.sceneModePicker.viewModel.dropDownVisible = true;
+                // this.viewer.sceneModePicker.viewModel.dropDownVisible = true;
                 // console.log(JSON.stringify(this.storedView));
             })
             this.viewer.geocoder.viewModel.search.afterExecute.addEventListener(() => {this.notifyRepaintRequired()});
@@ -2603,7 +2546,7 @@ module PIC {
                 // console.log('starting rendering @ ' + Cesium.getTimestamp());
             }
             this.lastCameraMoveTime = Cesium.getTimestamp();
-            this.viewer.sceneModePicker.viewModel.dropDownVisible = true;
+            // this.viewer.sceneModePicker.viewModel.dropDownVisible = true;
             this.viewer.useDefaultRenderLoop = true;
         }
 

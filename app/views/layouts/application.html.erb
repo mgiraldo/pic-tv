@@ -25,31 +25,13 @@
   <meta name="og:url" content="http://pic.nypl.org/">
 
   <link rel='shortcut icon' href='/nypl.png'>
-  <script type="text/javascript">
-  var feedback_form = "\n  <div id=\'feedback-toggle\'>\n    <a href=\"javascript:void(0)\" class=\"open visible\">Feedback<\/a>\n    <a href=\"javascript:void(0)\" class=\"close\">Close<\/a>\n  <\/div>\n  <form method=\"post\" id=\"feedback-form\" data-remote=\"true\" accept-charset=\"UTF-8\">\n\n      <input id=\"frompage\" name=\"frompage\" type=\"hidden\" value=\"/\" />\n      <h2 id=\'feedback-title\'>\n        <span class=\'step1\'>Feedback<\/span>\n        <span class=\'step2\'>Thank you!<\/span>\n      <\/h2>\n      <ul class=\'step1\'>\n        <li>\n          <input id=\'feedback-1\' type=\'radio\' value=\'1\' name=\'type\' checked=\'checked\'>\n          <label for=\'feedback-1\'>Comment<\/label>\n        <\/li>\n        <li>\n          <input id=\'feedback-2\' type=\'radio\' value=\'2\' name=\'type\'>\n          <label for=\'feedback-2\'>Correction<\/label>\n        <\/li>\n        <li>\n          <input id=\'feedback-3\' type=\'radio\' value=\'3\' name=\'type\'>\n          <label for=\'feedback-3\'>Bug<\/label>\n        <\/li>\n        <\/ul>\n\n  <input type=\'text\' name=\'feedback_id\' class=\'step1 textfield\' placeholder=\'record ID (if any)\' />  <textarea id=\'feedback-text\' name=\'feedback_text\' data-placeholder=\'We want to hear from you! Enter your feedback here.\' data-error=\'Please leave a comment.\' maxlength=\'1200\' class=\'step1\'><\/textarea><div id=\'feedback-counter\' class=\'step1\'>1200<\/div>\n      <div class=\'controls step1\'>\n        <a href=\'javascript:void(0)\' class=\'button\' id=\'feedback-send\'>Send<\/a>\n      <\/div>\n\n      <div id=\'feedback-wait\'>\n        <span>Please wait...<\/span>\n      <\/div>\n\n      <p id=\'feedback-thanks\' class=\'step2\'>Thank you for helping the Library.<\/p>\n      <div class=\'controls step2\'>\n        <a href=\'javascript:void(0)\' class=\'button\' id=\'feedback-close\'>Close ><\/a>\n      <\/div>\n  <\/form>\n\n\n";
-  </script>
 
   <%= yield :dynamic_js %>
 </head>
 <body>
 
-<header>
-  <a id="nypl" href="//nypl.org" target="_blank">&#x57;</a><a href="//nypl.org" target="_blank">The New York Public Library</a>&nbsp;&nbsp;/&nbsp;&nbsp;<a href="/" data-no-turbolink>Photographers’ Identities Catalog</a><%= yield :page_name %>
-</header>
-
-
 <%= yield %>
 
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', 'UA-1420324-133', 'auto');
-  ga('send', 'pageview');
-
-</script>
 
 </body>
 </html>
