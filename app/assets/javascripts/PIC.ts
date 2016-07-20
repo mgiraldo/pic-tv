@@ -85,7 +85,7 @@ module PIC {
         resultLimit = 50;
         heightDelta = 100;
         lineWidth = 2;
-        pixelSize = 2;
+        pixelSize = 4;
         pixelScale = 4;
         farScale = 1.0;
         nearScale = 0.1;
