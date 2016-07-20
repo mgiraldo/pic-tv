@@ -309,7 +309,9 @@ module PIC {
             // url history management
             $("#cesiumContainer").on("overlays:ready", (e) => {
                 var state = Historyjs.getState();
-                if (state.hash == "/map/") {
+                console.log(state.hash);
+                
+                if (state.hash == "/") {
                     this.displayBaseData();
                     this.applyFilters();
                 } else {
@@ -377,7 +379,7 @@ module PIC {
                 ,creditContainer : "credits"
                 ,selectionIndicator : false
                 ,skyBox : false
-                ,sceneMode : Cesium.SceneMode.SCENE2D
+                ,sceneMode : Cesium.SceneMode.SCENE3D
             });
 
             this.scene = this.viewer.scene;
@@ -2023,7 +2025,7 @@ module PIC {
                 keyVals.push(filter + "=" + this.filters[filter]);
             }
             url += keyVals.join("&");
-            var mode = 2
+            var mode = 3
             if (this.hasWebGL) mode = this.scene.mode
             url += "&mode=" + mode
             return url;
