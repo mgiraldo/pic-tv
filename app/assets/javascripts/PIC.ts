@@ -83,7 +83,7 @@ module PIC {
         padding = 0.01; // to extend the boundary a bit
         maxExport = 100;
         resultLimit = 50;
-        heightDelta = 100;
+        heightDelta = 24;
         lineWidth = 2;
         pixelSize = 4;
         pixelScale = 4;
@@ -741,8 +741,20 @@ module PIC {
             this.updateTotals(this.allIDs.length);
             this.enableFacets();
             this.updateBounds();
-            this.showResults();
+            this.flyToNewSpot()
+            // this.showResults();
             // this.applyBaseAggregations()
+        }
+
+        flyToNewSpot () {
+            this.viewer.camera.flyTo({
+                destination : Cesium.Cartesian3.fromDegrees(-74.009, 40.676, 2500.0),
+                orientation : {
+                    heading : Cesium.Math.toRadians(-5.0),
+                    pitch : Cesium.Math.toRadians(-20.0),
+                    roll : 0.0
+                }
+            })
         }
 
         applyAggregations (aggs) {
