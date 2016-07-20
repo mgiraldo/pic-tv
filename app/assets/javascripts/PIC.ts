@@ -373,12 +373,14 @@ module PIC {
                 ,infoBox : false
                 ,timeline : false
                 ,animation : false
+                ,scene3DOnly : true
                 ,navigationHelpButton : false
                 ,navigationInstructionsInitiallyVisible : false
                 ,mapProjection : new Cesium.WebMercatorProjection()
                 ,creditContainer : "credits"
                 ,selectionIndicator : false
                 ,skyBox : false
+                ,skyAtmosphere : false
                 ,sceneMode : Cesium.SceneMode.SCENE3D
             });
 
@@ -747,6 +749,7 @@ module PIC {
         }
 
         flyToNewSpot () {
+           
             this.viewer.camera.flyTo({
                 destination : Cesium.Cartesian3.fromDegrees(-74.009, 40.676, 2500.0),
                 orientation : {
