@@ -16,6 +16,40 @@ declare module Cesium {
       getURL(resource: string): string;
   }
 
+  enum EasingFunction {
+    LINEAR_NONE,
+    QUADRACTIC_IN,
+    QUADRACTIC_OUT,
+    QUADRACTIC_IN_OUT,
+    CUBIC_IN,
+    CUBIC_OUT,
+    CUBIC_IN_OUT,
+    QUARTIC_IN,
+    QUARTIC_OUT,
+    QUARTIC_IN_OUT,
+    QUINTIC_IN,
+    QUINTIC_OUT,
+    QUINTIC_IN_OUT,
+    SINUSOIDAL_IN,
+    SINUSOIDAL_OUT,
+    SINUSOIDAL_IN_OUT,
+    EXPONENTIAL_IN,
+    EXPONENTIAL_OUT,
+    EXPONENTIAL_IN_OUT,
+    CIRCULAR_IN,
+    CIRCULAR_OUT,
+    CIRCULAR_IN_OUT,
+    ELASTIC_IN,
+    ELASTIC_OUT,
+    ELASTIC_IN_OUT,
+    BACK_IN,
+    BACK_OUT,
+    BACK_IN_OUT,
+    BOUNCE_IN,
+    BOUNCE_OUT,
+    BOUNCE_IN_OUT
+  }
+
   class BingMapsApi {
       static defaultKey: string;
   }
@@ -2775,7 +2809,7 @@ declare module Cesium {
       viewRectangle(rectangle: Rectangle, ellipsoid?: Ellipsoid);
       pickEllipsoid(windowPosition: Cartesian2, ellipsoid?: Ellipsoid, result?: Cartesian3): Cartesian3;
       getPickRay(windowPosition: Cartesian2, result?: Ray): any;
-      flyTo(options: { destination: Cartesian3|Rectangle; orientation?: any; duration?: number; complete?: Camera.FlightCompleteCallback; cancel?: Camera.FlightCancelledCallback; endTransform?: Matrix4; convert?: boolean });
+      flyTo(options: { destination: Cartesian3|Rectangle; orientation?: any; duration?: number; complete?: Camera.FlightCompleteCallback; cancel?: Camera.FlightCancelledCallback; endTransform?: Matrix4; convert?: boolean; easingFunction?: EasingFunction; maximumHeight?: Number; });
       viewBoundingSphere(boundingSphere: BoundingSphere, offset?: HeadingPitchRange);
       flyToBoundingSphere(boundingSphere: BoundingSphere, options?: { duration?: number; offset?: HeadingPitchRange; complete?: Camera.FlightCompleteCallback; cancel?: Camera.FlightCancelledCallback; endTransform?: Matrix4 });
       clone(): Camera;
@@ -3529,6 +3563,11 @@ declare module Cesium {
       constructor();
   }
 
+  class Fog {
+      enabled: boolean;
+      constructor();
+  }
+
   class Scene {
       rethrowRenderErrors: boolean;
       completeMorphOnUserInput: boolean;
@@ -3537,6 +3576,7 @@ declare module Cesium {
       skyBox: SkyBox;
       skyAtmosphere: SkyAtmosphere;
       sun: Sun;
+      fog: Fog;
       sunBloom: boolean;
       moon: Moon;
       backgroundColor: Color;

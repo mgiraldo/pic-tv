@@ -67,6 +67,7 @@ module PIC {
         pointArray = [];
         pointHash = {}; // contains the index to a given id in the pointArray
         latlonHeightHash = {};
+        latlonHeightArray = []
         heightHash = {};
         allIDs = [];
         lines;
@@ -85,7 +86,7 @@ module PIC {
         resultLimit = 50;
         heightDelta = 24;
         lineWidth = 2;
-        pixelSize = 4;
+        pixelSize = 5;
         pixelScale = 4;
         farScale = 1.0;
         nearScale = 0.1;
@@ -93,6 +94,19 @@ module PIC {
         minHeight = 200
         generalMargin = 10;
         defaultValue = "*";
+
+        // for random moves
+        heightThreshold = 50
+        cameraHeight = 2000.0
+        cameraDistance = 1 // degrees
+        flightDelay = 7000
+        flightDuration = 5
+        flightCountries = [1,12,9]
+        cameraMoveBackAmount = 25000
+        cameraMoveDownAmount = 5000
+        cameraMoveBackRemain = 0
+        cameraMoveDownRemain = 0
+        cameraMoveIncrement = 30
 
         nullIsland: any;
         boundsFrom: Cesium.Cartographic;
@@ -367,7 +381,7 @@ module PIC {
                 })
 
                 // ,clock: new Cesium.Clock({shouldAnimate:false})
-                // ,geocoder: false
+                ,geocoder: false
                 ,baseLayerPicker: false
                 ,homeButton : false
                 ,infoBox : false
@@ -387,6 +401,8 @@ module PIC {
             this.scene = this.viewer.scene;
             this.canvas = this.viewer.canvas;
             this.camera = this.viewer.camera;
+
+            this.scene.fog.enabled = false;
 
             this.addNullIsland();
 
@@ -749,15 +765,77 @@ module PIC {
         }
 
         flyToNewSpot () {
-           
+            var len = this.latlonHeightArray.length
+            var found = false
+            var lat, lon
+
+            while (!found) {
+                var rand = Math.floor( Math.random() * len )
+                var randHash = this.latlonHeightArray[rand]
+                var newLat, newLon
+                [newLat, newLon] = randHash.split(",")
+                if (newLat != lat || newLon != lon) {
+                    lat = newLat
+                    lon = newLon
+                    found = true
+                }
+            }
+
+            
+            // lat = 40.605
+            // lon = -73.995
+
+            var head = Math.random() * 180
+            var pitch = -(Math.random() * 15 + 10)
+
+            // console.log(randHash, lat, lon);
+
             this.viewer.camera.flyTo({
-                destination : Cesium.Cartesian3.fromDegrees(-74.009, 40.676, 2500.0),
+                destination : Cesium.Cartesian3.fromDegrees(lon, lat, this.cameraHeight),
                 orientation : {
-                    heading : Cesium.Math.toRadians(-5.0),
-                    pitch : Cesium.Math.toRadians(-20.0),
+                    heading : Cesium.Math.toRadians(head),
+                    pitch : Cesium.Math.toRadians(pitch),
                     roll : 0.0
+                },
+                duration : this.flightDuration,
+                maximumHeight : this.cameraHeight * 2,
+                easingFunction : Cesium.EasingFunction.QUADRACTIC_IN_OUT,
+                complete : () => {
+                    setTimeout( () => {
+                        this.flyToNewSpot()
+                    }, this.flightDelay)
                 }
             })
+            this.correctCameraPosition()
+            this.notifyRepaintRequired()
+        }
+
+        correctCameraPosition () {
+            this.cameraMoveBackRemain = this.cameraMoveBackAmount
+            this.cameraMoveDownRemain = this.cameraMoveDownAmount
+            setTimeout( () => {
+                this.cameraMoveBack()
+            }, 1)
+        }
+
+        cameraMoveBack () {
+            var shouldMove = false
+            if (this.cameraMoveBackRemain > 0) {
+                this.camera.moveBackward(this.cameraMoveIncrement)
+                this.cameraMoveBackRemain -= this.cameraMoveIncrement
+                shouldMove = true
+            }
+            if (this.cameraMoveDownRemain > 0) {
+                this.camera.moveDown(this.cameraMoveIncrement)
+                this.cameraMoveDownRemain -= this.cameraMoveIncrement
+                shouldMove = true
+            }
+            if (shouldMove) {
+                this.notifyRepaintRequired()
+                setTimeout( () => {
+                    this.cameraMoveBack()
+                }, 1)
+            }
         }
 
         applyAggregations (aggs) {
@@ -2222,6 +2300,9 @@ module PIC {
                     }
                     this.latlonHeightHash[latlonHash] = height;
                     this.heightHash[p[3]] = height;
+                    if (this.flightCountries.indexOf(p[5]) !== -1 && height / this.heightDelta > this.heightThreshold) {
+                        this.latlonHeightArray.push(latlonHash)                        
+                    }
                 } else {
                     height = p[6];
                 }
@@ -2552,7 +2633,7 @@ module PIC {
                 // this.viewer.sceneModePicker.viewModel.dropDownVisible = true;
                 // console.log(JSON.stringify(this.storedView));
             })
-            this.viewer.geocoder.viewModel.search.afterExecute.addEventListener(() => {this.notifyRepaintRequired()});
+            // this.viewer.geocoder.viewModel.search.afterExecute.addEventListener(() => {this.notifyRepaintRequired()});
             // this.camera.moveEnd.addEventListener(() => this.onCameraMoved());
         }
 
