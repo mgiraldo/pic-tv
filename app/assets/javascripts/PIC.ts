@@ -109,6 +109,7 @@ module PIC {
         cameraMoveIncrement = 30
         cameraLat
         cameraLon
+        shouldMove = false
 
         nullIsland: any;
         boundsFrom: Cesium.Cartographic;
@@ -769,6 +770,11 @@ module PIC {
         }
 
         flyToNewSpot () {
+            this.shouldMove = false
+
+            this.cameraMoveBackRemain = this.cameraMoveBackAmount
+            this.cameraMoveDownRemain = this.cameraMoveDownAmount
+
             var len = this.latlonHeightArray.length
             var found = false
 
@@ -822,18 +828,18 @@ module PIC {
         }
 
         cameraMoveBack () {
-            var shouldMove = false
+            this.shouldMove = false
             if (this.cameraMoveBackRemain > 0) {
                 this.camera.moveBackward(this.cameraMoveIncrement)
                 this.cameraMoveBackRemain -= this.cameraMoveIncrement
-                shouldMove = true
+                this.shouldMove = true
             }
             if (this.cameraMoveDownRemain > 0) {
                 this.camera.moveDown(this.cameraMoveIncrement)
                 this.cameraMoveDownRemain -= this.cameraMoveIncrement
-                shouldMove = true
+                this.shouldMove = true
             }
-            if (shouldMove) {
+            if (this.shouldMove) {
                 this.notifyRepaintRequired()
                 setTimeout( () => {
                     this.cameraMoveBack()
