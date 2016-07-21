@@ -96,20 +96,21 @@ module PIC {
         defaultValue = "*";
 
         // for random moves
-        heightThreshold = 30
+        heightThreshold = 5
         cameraHeight = 2000.0
-        cameraDistance = 1 // degrees
+        cameraDistance = 2
         flightDelay = 7000
-        flightDuration = 5
+        flightDuration = 10
         flightCountries = [1,12,9]
-        cameraMoveBackAmount = 25000
-        cameraMoveDownAmount = 5000
+        cameraMoveBackAmount = 5000
+        cameraMoveDownAmount = 1000
         cameraMoveBackRemain = 0
         cameraMoveDownRemain = 0
         cameraMoveIncrement = 30
         cameraLat
         cameraLon
         shouldMove = false
+        firstFlight = true
 
         nullIsland: any;
         boundsFrom: Cesium.Cartographic;
@@ -777,16 +778,22 @@ module PIC {
 
             var len = this.latlonHeightArray.length
             var found = false
+            var attempts = 100
 
-            while (!found) {
+            while (!found && attempts >= 0) {
+                attempts--
                 var rand = Math.floor( Math.random() * len )
                 var randHash = this.latlonHeightArray[rand]
                 var newLat, newLon
                 [newLat, newLon] = randHash.split(",")
-                if (newLat != this.cameraLat || newLon != this.cameraLon) {
+                newLat = Number(newLat)
+                newLon = Number(newLon)
+                // console.log(this.cameraLat, this.cameraLon, newLat, newLon, this.cameraLat + this.cameraDistance, this.cameraLat - this.cameraDistance, this.cameraLon + this.cameraDistance, this.cameraLon - this.cameraDistance, attempts);
+                if (attempts == 0 || this.firstFlight || ((newLat != this.cameraLat && this.cameraLat + this.cameraDistance > newLat && this.cameraLat - this.cameraDistance < newLat) && (newLon != this.cameraLon && this.cameraLon + this.cameraDistance > newLon && this.cameraLon - this.cameraDistance < newLon))) {
                     this.cameraLat = newLat
                     this.cameraLon = newLon
                     found = true
+                    this.firstFlight = false
                 }
             }
 
@@ -797,7 +804,7 @@ module PIC {
             var head = Math.random() * 180
             var pitch = -(Math.random() * 15 + 10)
 
-            // console.log(randHash, lat, lon);
+            console.log(this.cameraLat, this.cameraLon, newLat, newLon, attempts);
 
             this.viewer.camera.flyTo({
                 destination : Cesium.Cartesian3.fromDegrees(this.cameraLon, this.cameraLat, this.cameraHeight),
@@ -810,12 +817,12 @@ module PIC {
                 maximumHeight : this.cameraHeight * 2,
                 easingFunction : Cesium.EasingFunction.QUADRACTIC_IN_OUT,
                 complete : () => {
+                    this.correctCameraPosition()
                     setTimeout( () => {
                         this.flyToNewSpot()
                     }, this.flightDelay)
                 }
             })
-            this.correctCameraPosition()
             this.notifyRepaintRequired()
         }
 
