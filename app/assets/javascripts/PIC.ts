@@ -402,6 +402,7 @@ module PIC {
                 ,selectionIndicator : false
                 ,skyBox : false
                 ,skyAtmosphere : false
+                ,fullscreenButton : false
                 ,sceneMode : Cesium.SceneMode.SCENE3D
             });
 
