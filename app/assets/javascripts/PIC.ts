@@ -96,6 +96,7 @@ module PIC {
         defaultValue = "*";
 
         // for random moves
+        flightAttempts = 10000
         heightThreshold = 5
         cameraHeight = 2000.0
         cameraDistance = 2
@@ -778,7 +779,7 @@ module PIC {
 
             var len = this.latlonHeightArray.length
             var found = false
-            var attempts = 100
+            var attempts = this.flightAttempts
 
             while (!found && attempts >= 0) {
                 attempts--
