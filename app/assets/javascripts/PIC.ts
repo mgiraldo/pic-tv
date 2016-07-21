@@ -99,7 +99,7 @@ module PIC {
         flightAttempts = 10000
         heightThreshold = 5
         cameraHeight = 2000.0
-        cameraDistance = 2
+        cameraDistance = 1
         flightDelay = 7000
         flightDuration = 10
         flightCountries = [1,12,9]
