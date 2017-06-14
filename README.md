@@ -1,12 +1,6 @@
-# PIC
+# PIC TV
 
-By [Mauricio Giraldo](https://github.com/mgiraldo), [NYPL Labs](//twitter.com/nypl_labs)
-
-## View at: [pic.nypl.org](http://pic.nypl.org)
-
-See also the [PIC data repository](https://github.com/nypl/pic-data).
-
-![](app/assets/images/sample-04.png)
+An screensaver-like version of the [PIC app](http://pic.nypl.org).
 
 ## License
 
